@@ -1,0 +1,51 @@
+defmodule AlgorithmicTask do
+
+    def sequence_c(a, b) do
+        a1 = Enum.sort(a)
+        b1 = Enum.sort(b)
+        fk = forbidden_keys(a1,b1,0,[])
+        a |> Enum.filter(fn(element) -> element not in fk end) 
+    end
+
+    def forbidden_keys([], _, _, result_list) do
+        result_list
+    end
+    def forbidden_keys([last_number], [], occurances, result_list) do
+        case is_prime(occurances) do
+            true -> result_list++[last_number]
+            false -> result_list
+        end
+    end
+    def forbidden_keys([number|rest_a], [number|rest_b], occurances, result) do
+        forbidden_keys([number|rest_a], rest_b, occurances+1, result)
+    end
+    def forbidden_keys([number_a|rest_a], [number_b|rest_b], occurances, result_list) do
+        new_result_list = case is_prime(occurances) do
+            true -> result_list++[number_a]
+            false -> result_list
+        end
+        case number_a > number_b do
+            true -> forbidden_keys([number_a|rest_a], rest_b, 0, new_result_list)
+            false -> forbidden_keys(rest_a, [number_b|rest_b], 0, new_result_list)
+        end
+    end
+    
+    def is_prime(number) when number < 2 do
+        false
+    end
+    def is_prime(number) do
+        is_prime(number,2)
+    end
+
+    def is_prime(number, divider) do
+        case divider > :math.sqrt(number) do
+            true -> true
+            false -> case rem(number, divider) do
+                        0 -> false
+                        _ -> is_prime(number, divider+1)
+                     end
+        end
+    end
+
+end
+
